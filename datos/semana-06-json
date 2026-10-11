@@ -1,0 +1,26 @@
+{
+  "curso": {
+    "institucion": "UCRISH",
+    "asignatura": "Español",
+    "grado": "10.º grado",
+    "semana": 6,
+    "tema": "Tipos de textos",
+    "docente": "Profesor Asignado"
+  },
+  "objetivos": [
+    "Identificar los principales tipos de textos.",
+    "Diferenciar sus características estructurales."
+  ],
+  "diapositivas": [
+    {
+      "titulo": "Portada: Semana 6",
+      "tipo": "portada",
+      "contenido": "Bienvenidos a la unidad didáctica sobre los Tipos de Textos."
+    },
+    {
+      "titulo": "Introducción",
+      "tipo": "concepto",
+      "contenido": "Los textos se clasifican según su intención comunicativa: informativos, argumentativos, literarios, etc."
+    }
+  ]
+}
