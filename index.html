@@ -32,7 +32,7 @@
 
     <div class="setup-container">
         <h3>Pega aquí el bloque JSON generado por la IA:</h3>
-        <textarea id="json-input" placeholder="Pega el código JSON que empiece con [ y termine con ] aquí..."></textarea>
+        <textarea id="json-input" placeholder="Pega el código JSON aquí..."></textarea>
         <button onclick="iniciarPresentacion()">Generar Diapositivas con Pixabay</button>
     </div>
 
@@ -55,9 +55,7 @@
     </div>
 
     <script>
-        // Tu API KEY real y validada de Pixabay
         var API_KEY = '57992963-078d0cac902fe8d17abb6865d'; 
-        
         var diapositivasData = [];
         var indiceActual = 0;
 
@@ -65,6 +63,9 @@
             try {
                 var rawJson = $('#json-input').val().trim();
                 if (!rawJson) return alert("Por favor, pega el JSON antes de continuar.");
+
+                // LIMPIEZA AUTOMÁTICA EXTRA: Corrige comillas curvas e inválidas comunes del portapapeles
+                rawJson = rawJson.replace(/[\u201C\u201D]/g, '"'); // Convierte comillas tipográficas en estándar
 
                 diapositivasData = JSON.parse(rawJson);
                 indiceActual = 0;
@@ -80,10 +81,8 @@
                         let res = await fetch(URL);
                         let data = await res.json();
                         if (data.hits && data.hits.length > 0) {
-                            // Se asigna automáticamente la URL de la imagen de Pixabay
-                            diapositivasData[i].imagenUrl = data.hits[0].webformatURL;
+                            diapositivasData[i].imagenUrl = data.hits.webformatURL;
                         } else {
-                            // Imagen gris elegante de respaldo si Pixabay no tiene coincidencias
                             diapositivasData[i].imagenUrl = 'https://unsplash.com'; 
                         }
                     } catch (err) {
@@ -91,13 +90,12 @@
                     }
                 }
 
-                // Desbloquea la interfaz visual de las diapositivas
                 $('#slide-viewer').css('display', 'block');
                 $('#control-buttons').css('display', 'flex');
                 renderizarDiapositiva();
 
             } catch (e) {
-                alert("Error de formato: Asegúrate de copiar el JSON exactamente desde el corchete inicial [ hasta el corchete final ].");
+                alert("Error de análisis: Tu navegador detecta un carácter inválido. Intenta copiar y pegar nuevamente el texto de prueba sin añadir espacios.");
                 console.error(e);
             }
         }
@@ -119,4 +117,3 @@
     </script>
 </body>
 </html>
-
