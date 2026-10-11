@@ -3,11 +3,9 @@ let slideActual = 0;
 
 async function cargarPresentacion() {
     try {
-        // Carga el archivo JSON correspondiente a la semana
         let respuesta = await fetch('datos/semana-06.json');
         datosPresentacion = await respuesta.json();
         
-        // Actualizar cabecera con la información del curso
         document.getElementById('info-institucion').innerText = datosPresentacion.curso.institucion;
         document.getElementById('info-asignatura').innerText = datosPresentacion.curso.asignatura;
         document.getElementById('info-tema').innerText = `Semana ${datosPresentacion.curso.semana}: ${datosPresentacion.curso.tema}`;
@@ -28,19 +26,27 @@ function mostrarSlide() {
         document.getElementById('slide-title').innerText = slide.titulo;
         document.getElementById('slide-content').innerHTML = `<p>${slide.contenido}</p>`;
     } else {
-        document.getElementById('slide-title').innerText = "Reflexión Final";
-        document.getElementById('slide-content').innerHTML = `<p>Has completado el contenido teórico de la semana.</p>`;
+        // Pantalla de Actividades Interactivas al finalizar las diapositivas
+        document.getElementById('slide-title').innerText = "🧩 Actividades Formativas Interactivas";
+        document.getElementById('slide-content').innerHTML = `<div id="contenedor-sopa"></div>`;
+        
+        // Llamar a la función del archivo actividades.js
+        if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras) {
+            generarSopaDeLetras('contenedor-sopa', datosPresentacion.actividades.sopaLetras.palabras);
+        }
     }
 
-    document.getElementById('indicador-paginas').innerText = `${slideActual + 1} / ${diapositivas.length}`;
+    // El total de páginas incluye las diapositivas + 1 pantalla final de actividades
+    let totalPasos = diapositivas.length + 1;
+    document.getElementById('indicador-paginas').innerText = `${slideActual + 1} / ${totalPasos}`;
 }
 
 function cambiarSlide(direccion) {
-    let totalSlides = datosPresentacion.diapositivas.length;
+    let totalPasos = datosPresentacion.diapositivas.length + 1;
     slideActual += direccion;
     
     if (slideActual < 0) slideActual = 0;
-    if (slideActual >= totalSlides) slideActual = totalSlides - 1;
+    if (slideActual >= totalPasos) slideActual = totalPasos - 1;
     
     mostrarSlide();
 }
