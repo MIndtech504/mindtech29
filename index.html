@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de Diapositivas Inteligente</title>
+    <!-- Importamos jQuery para la compatibilidad con el motor de Pixabay -->
+    <script src="https://jquery.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .setup-container { width: 90%; max-width: 700px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        textarea { width: 100%; height: 150px; box-sizing: border-box; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-family: monospace; font-size: 13px; }
+        button { background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        
+        /* Contenedor de la Diapositiva */
+        .diapositiva-box { width: 90%; max-width: 800px; height: 450px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: none; overflow: hidden; position: relative; margin-top: 10px; }
+        .slide-layout { display: flex; width: 100%; height: 100%; }
+        .slide-text { flex: 1; padding: 40px; display: flex; flex-direction: column; justify-content: center; background-color: #ffffff; }
+        .slide-text h2 { font-size: 32px; margin-bottom: 15px; color: #111; font-weight: 700; }
+        .slide-text p { font-size: 18px; color: #444; line-height: 1.6; }
+        .slide-image { flex: 1; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #eaeaea; transition: background-image 0.3s ease-in-out; }
+        
+        /* Controles de Navegación */
+        .controles { margin-top: 20px; display: none; gap: 15px; align-items: center; }
+        .btn-nav { background-color: #007bff; }
+        .btn-nav:hover { background-color: #0056b3; }
+        #slide-index { font-weight: bold; font-size: 16px; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="setup-container">
+        <h3>Pega aquí el bloque JSON generado por la IA:</h3>
+        <textarea id="json-input" placeholder="Pega el código JSON que empiece con [ y termine con ] aquí..."></textarea>
+        <button onclick="iniciarPresentacion()">Generar Diapositivas con Pixabay</button>
+    </div>
+
+    <!-- Visor de la presentación interactiva -->
+    <div id="slide-viewer" class="diapositiva-box">
+        <div class="slide-layout">
+            <div class="slide-text">
+                <h2 id="slide-title">Título</h2>
+                <p id="slide-content">Contenido...</p>
+            </div>
+            <div id="slide-img-target" class="slide-image"></div>
+        </div>
+    </div>
+
+    <!-- Botones para pasar páginas -->
+    <div class="controles" id="control-buttons">
+        <button class="btn-nav" onclick="cambiarSlide(-1)">Anterior</button>
+        <span id="slide-index">1 / 1</span>
+        <button class="btn-nav" onclick="cambiarSlide(1)">Siguiente</button>
+    </div>
+
+    <script>
+        // Tu API KEY real y validada de Pixabay
+        var API_KEY = '57992963-078d0cac902fe8d17abb6865d'; 
+        
+        var diapositivasData = [];
+        var indiceActual = 0;
+
+        async function iniciarPresentacion() {
+            try {
+                var rawJson = $('#json-input').val().trim();
+                if (!rawJson) return alert("Por favor, pega el JSON antes de continuar.");
+
+                diapositivasData = JSON.parse(rawJson);
+                indiceActual = 0;
+
+                if(diapositivasData.length === 0) return alert("El JSON no contiene diapositivas.");
+
+                // Buscador automático en el banco de imágenes de Pixabay
+                for (let i = 0; i < diapositivasData.length; i++) {
+                    var query = encodeURIComponent(diapositivasData[i].prompt);
+                    var URL = "https://pixabay.com" + API_KEY + "&q=" + query + "&image_type=photo&per_page=3&safesearch=true";
+                    
+                    try {
+                        let res = await fetch(URL);
+                        let data = await res.json();
+                        if (data.hits && data.hits.length > 0) {
+                            // Se asigna automáticamente la URL de la imagen de Pixabay
+                            diapositivasData[i].imagenUrl = data.hits[0].webformatURL;
+                        } else {
+                            // Imagen gris elegante de respaldo si Pixabay no tiene coincidencias
+                            diapositivasData[i].imagenUrl = 'https://unsplash.com'; 
+                        }
+                    } catch (err) {
+                        diapositivasData[i].imagenUrl = 'https://unsplash.com';
+                    }
+                }
+
+                // Desbloquea la interfaz visual de las diapositivas
+                $('#slide-viewer').css('display', 'block');
+                $('#control-buttons').css('display', 'flex');
+                renderizarDiapositiva();
+
+            } catch (e) {
+                alert("Error de formato: Asegúrate de copiar el JSON exactamente desde el corchete inicial [ hasta el corchete final ].");
+                console.error(e);
+            }
+        }
+
+        function renderizarDiapositiva() {
+            var slide = diapositivasData[indiceActual];
+            $('#slide-title').text(slide.titulo);
+            $('#slide-content').text(slide.contenido);
+            $('#slide-img-target').css('background-image', 'url(' + slide.imagenUrl + ')');
+            $('#slide-index').text((indiceActual + 1) + ' / ' + diapositivasData.length);
+        }
+
+        function cambiarSlide(direccion) {
+            indiceActual += direccion;
+            if (indiceActual < 0) indiceActual = 0;
+            if (indiceActual >= diapositivasData.length) indiceActual = diapositivasData.length - 1;
+            renderizarDiapositiva();
+        }
+    </script>
+</body>
+</html>
 
