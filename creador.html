@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Docente - Creador de Presentaciones</title>
+    <link rel="stylesheet" href="css/presentacion.css">
+    <style>
+        .form-container {
+            max-width: 700px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+        .btn-volver {
+            background-color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .btn-volver:hover {
+            background-color: #707b7c;
+        }
+        .btn-guardar {
+            background-color: #e67e22;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+        }
+        .btn-guardar:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body style="display: block; height: auto; padding: 20px;">
+
+    <div class="form-container">
+        <a href="index.html" style="text-decoration: none;">
+            <button class="btn-volver">← Volver al Menú Principal</button>
+        </a>
+
+        <h1 style="color: #2c3e50; font-size: 24px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
+            👨‍🏫 Modo Docente: Creador de Unidades Didácticas
+        </h1>
+
+        <form id="docente-form" onsubmit="guardarConfiguracion(event)">
+            <div class="form-group">
+                <label for="institucion">Institución:</label>
+                <input type="text" id="institucion" value="UCRISH" required>
+            </div>
+
+            <div class="form-group">
+                <label for="asignatura">Asignatura:</label>
+                <input type="text" id="asignatura" value="Español" required>
+            </div>
+
+            <div class="form-group">
+                <label for="grado">Grado / Curso:</label>
+                <input type="text" id="grado" value="10.º grado" required>
+            </div>
+
+            <div class="form-group">
+                <label for="semana">Número de Semana:</label>
+                <input type="text" id="semana" value="6" required>
+            </div>
+
+            <div class="form-group">
+                <label for="tema">Tema Principal:</label>
+                <input type="text" id="tema" value="Tipos de textos" required>
+            </div>
+
+            <div class="form-group">
+                <label for="objetivos">Objetivos (separados por comas o saltos de línea):</label>
+                <textarea id="objetivos">Identificar los principales tipos de textos.
+Diferenciar sus características estructurales.</textarea>
+            </div>
+
+            <button type="submit" class="btn-guardar">💾 Generar y Guardar Configuración</button>
+        </form>
+    </div>
+
+    <script>
+        function guardarConfiguracion(event) {
+            event.preventDefault();
+            
+            const configuracion = {
+                curso: {
+                    institucion: document.getElementById('institucion').value,
+                    asignatura: document.getElementById('asignatura').value,
+                    grado: document.getElementById('grado').value,
+                    semana: document.getElementById('semana').value,
+                    tema: document.getElementById('tema').value
+                },
+                objetivos: document.getElementById('objetivos').value.split('\n'),
+                diapositivas: [
+                    {
+                        titulo: `Semana ${document.getElementById('semana').value}: ${document.getElementById('tema').value}`,
+                        tipo: "portada",
+                        contenido: `Bienvenidos a la asignatura de ${document.getElementById('asignatura').value}.`
+                    }
+                ]
+            };
+
+            // Mostrar el JSON generado en consola y alertar al docente
+            console.log("Configuración generada:", JSON.stringify(configuracion, null, 2));
+            alert("¡Configuración generada con éxito! (En las siguientes fases conectaremos esto para exportar el archivo JSON o actualizar la vista del estudiante automáticamente).");
+        }
+    </script>
+
+</body>
+</html>
