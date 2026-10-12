@@ -15,12 +15,31 @@
     {
       "titulo": "Portada: Semana 6",
       "tipo": "portada",
-      "contenido": "Bienvenidos a la unidad didáctica sobre los Tipos de Textos."
+      "contenido": "Bienvenidos a la unidad didáctica sobre los Tipos de Textos.",
+      "imagen": "https://cdn.pixabay.com/photo/2015/11/19/21/10/glasses-1052010_1280.jpg"
     },
     {
       "titulo": "Introducción",
       "tipo": "concepto",
-      "contenido": "Los textos se clasifican según su intención comunicativa: informativos, argumentativos, literarios, etc."
+      "contenido": "Los textos se clasifican según su intención comunicativa: informativos, argumentativos, literarios, etc.",
+      "imagen": "https://cdn.pixabay.com/photo/2017/07/31/11/49/book-2558296_1280.jpg"
     }
-  ]
+  ],
+  "actividades": {
+    "sopaLetras": {
+      "activa": true,
+      "palabras": ["TEXTO", "AUTOR", "LECTURA", "IDEA", "PARRAFO", "ARGUMENTO"]
+    },
+    "test": {
+      "activo": true,
+      "preguntas": [
+        {
+          "pregunta": "¿Cuál de los siguientes es un texto argumentativo?",
+          "opciones": ["Una receta de cocina", "Un ensayo crítico", "Una descripción física", "Una lista de compras"],
+          "correcta": 1,
+          "retroalimentacion": "El ensayo busca defender una postura mediante argumentos."
+        }
+      ]
+    }
+  }
 }
