@@ -58,6 +58,7 @@
             display: flex;
             gap: 15px;
             margin-top: 25px;
+            flex-wrap: wrap;
         }
         .btn-accion {
             flex: 1;
@@ -74,7 +75,10 @@
         }
         .btn-guardar { background-color: #e67e22; }
         .btn-guardar:hover { background-color: #d35400; }
-        .btn-estudiante { background-color: #27ae60; }
+        .btn-estudiante { 
+            background-color: #27ae60; 
+            display: none; /* Oculto por defecto */
+        }
         .btn-estudiante:hover { background-color: #219653; }
     </style>
 </head>
@@ -107,7 +111,7 @@
 
             <div class="form-group">
                 <label for="semana">Número de Semana:</label>
-                <input type="text" id="semana" value="6" oninput="actualizarTextoBotonEstudiante()" required>
+                <input type="text" id="semana" value="6" required>
             </div>
 
             <div class="form-group">
@@ -133,23 +137,18 @@ Diferenciar sus características estructurales.</textarea>
 
             <div class="form-group">
                 <label for="palabrasSopa">Palabras clave para Sopa de Letras (separadas por comas):</label>
-                <input type="text" id="palabrasSopa" value="TEXTO, AUTOR, LLECTURA, IDEA, PARRAFO, ARGUMENTO">
+                <input type="text" id="palabrasSopa" value="TEXTO, AUTOR, LECTURA, IDEA, PARRAFO, ARGUMENTO">
             </div>
 
             <div class="acciones-container">
                 <button type="button" class="btn-accion btn-guardar" onclick="descargarJsonConfiguracion()">📥 Descargar JSON de la Semana</button>
-                <a href="presentacion.html" id="enlace-vista-estudiante" class="btn-accion btn-estudiante">👁️ Ver Semana 6 (Vista Estudiante)</a>
+                <!-- Botón de Ver presentación oculto inicialmente -->
+                <a href="presentacion.html" id="btn-ver-presentacion" class="btn-accion btn-estudiante">👁️ Ver presentación</a>
             </div>
         </form>
     </div>
 
     <script>
-        function actualizarTextoBotonEstudiante() {
-            const numSemana = document.getElementById('semana').value.trim() || "X";
-            const btnEstudiante = document.getElementById('enlace-vista-estudiante');
-            btnEstudiante.innerText = `👁️ Ver Semana ${numSemana} (Vista Estudiante)`;
-        }
-
         function autogenerarContenidoIA() {
             const tema = document.getElementById('tema').value;
             const asignatura = document.getElementById('asignatura').value;
@@ -211,7 +210,10 @@ Diferenciar sus características estructurales.</textarea>
             downloadAnchor.click();
             downloadAnchor.remove();
 
-            alert(`¡Archivo "semana-${semanaStr}.json" descargado con éxito! Súbelo a tu carpeta "datos/".`);
+            // Mostrar el botón de "Ver presentación" una vez generado el archivo
+            document.getElementById('btn-ver-presentacion').style.display = 'inline-block';
+
+            alert(`¡Archivo "semana-${semanaStr}.json" generado y descargado con éxito! Ya puedes ver la presentación.`);
         }
     </script>
 
