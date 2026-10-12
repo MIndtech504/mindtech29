@@ -1,134 +1,130 @@
-// Módulo Principal del Visor de Presentaciones - UCRISH
+// Visor de Presentaciones Estilo Gamma - UCRISH
 
-// Intentar cargar la presentación personalizada desde el Creador (localStorage) o usar valores predeterminados
 let datosPresentacionLocal = {
     "curso": {
         "institucion": "UCRISH",
-        "asignatura": "Tecnología",
-        "grado": "9.º grado",
-        "semana": 1,
-        "tema": "Tipos de computadoras y su evolución"
+        "asignatura": "Educación con Valores",
+        "grado": "9.º Grado",
+        "semana": 3,
+        "tema": "Comunicación Oral y Roles del Comunicador"
     },
     "diapositivas": [
         {
-            "titulo": "Portada: Tipos de Computadoras",
-            "contenido": "Bienvenidos a la lección de la Semana 1. En esta unidad exploraremos el impacto y la clasificación de los equipos de cómputo.",
-            "busquedaImagen": "computers technology history"
+            "titulo": "Semana 3: Comunicación Oral",
+            "contenido": "Exploración de los capítulos fundamentales sobre la efectividad verbal, no verbal y la interacción interpersonal en contextos académicos y profesionales.",
+            "busquedaImagen": "university education professional presentation"
         },
         {
-            "titulo": "Computadoras Personales y Portátiles",
-            "contenido": "Las laptops y PCs de escritorio están diseñadas para el trabajo diario, ofreciendo potencia suficiente para tareas académicas y profesionales.",
-            "busquedaImagen": "laptop desk office"
-        },
-        {
-            "titulo": "Servidores y Supercomputadoras",
-            "contenido": "Son equipos de alto rendimiento diseñados para procesar grandes volúmenes de datos, gestionar redes e impulsar la inteligencia artificial.",
-            "busquedaImagen": "server room datacenter"
+            "titulo": "Funciones del Comunicador",
+            "contenido": "Zacharis y Coleman identifican funciones esenciales derivadas de la naturaleza social de la comunicación humana, abarcando dimensiones lingüísticas, simbólicas y culturales.",
+            "busquedaImagen": "business team communication meeting"
         }
     ],
     "actividades": {
         "sopaLetras": {
-            "palabras": ["COMPUTADORA", "LAPTOP", "SERVIDOR", "HARDWARE", "SOFTWARE"]
+            "palabras": ["COMUNICACION", "ORAL", "MENSAJE", "EMISOR", "RECEPTOR"]
         },
         "test": {
             "preguntas": [
                 {
-                    "pregunta": "¿Qué tipo de computadora está diseñada para gestionar redes y almacenar grandes volúmenes de datos?",
-                    "opciones": ["Servidor", "Calculadora", "Reloj inteligente", "Tablet"],
+                    "pregunta": "¿Qué porcentaje aproximado del impacto comunicativo representan los elementos visuales y vocales según Mehrabian?",
+                    "opciones": ["93%", "50%", "10%", "100%"],
                     "correcta": 0,
-                    "retroalimentacion": "¡Correcto! Los servidores se encargan de gestionar servicios e información en red."
+                    "retroalimentacion": "¡Correcto! Los elementos visuales y vocales suman el 93% de la efectividad inicial."
                 }
             ]
         }
     }
 };
 
-// Comprobar si el docente guardó una configuración previa en el navegador
+// Cargar desde localStorage si el docente personalizó la lección
 const datosGuardados = localStorage.getItem('ucrish_presentacion_activa');
 if (datosGuardados) {
     try {
         datosPresentacionLocal = JSON.parse(datosGuardados);
     } catch (e) {
-        console.error("Error al leer los datos guardados en localStorage:", e);
+        console.error("Error al cargar localStorage:", e);
     }
 }
 
 let datosPresentacion = datosPresentacionLocal;
 let slideActual = 0;
 
-// Función para alternar el modo Pantalla Completa
 function alternarPantallaCompleta() {
     const elem = document.documentElement;
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
+    if (!document.fullscreenElement) {
+        if (elem.requestFullscreen) elem.requestFullscreen();
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
     }
 }
 
 function cargarPresentacion() {
-    document.getElementById('info-institucion').innerText = datosPresentacion.curso.institucion || "UCRISH";
-    document.getElementById('info-asignatura').innerText = datosPresentacion.curso.asignatura || "";
-    document.getElementById('info-tema').innerText = `Semana ${datosPresentacion.curso.semana || 1}: ${datosPresentacion.curso.tema || ""}`;
-
+    const curso = datosPresentacion.curso || {};
+    document.getElementById('info-institucion').innerText = `${curso.institucion || 'UCRISH'} • ${curso.asignatura || ''}`;
+    document.getElementById('info-tema').innerText = `Semana ${curso.semana || 1}: ${curso.tema || ''}`;
     mostrarSlide();
 }
 
 async function mostrarSlide() {
     let diapositivas = datosPresentacion.diapositivas || [];
-    
+    const viewer = document.getElementById('slide-viewer');
+
     if (slideActual < diapositivas.length) {
         let slide = diapositivas[slideActual];
-        document.getElementById('slide-title').innerText = slide.titulo;
         
-        let contenidoHtml = `<p style="font-size: 17px; color: #34495e; line-height: 1.6;">${slide.contenido}</p>`;
-        contenidoHtml += `<div id="imagen-slide-container" style="margin-top: 15px; text-align: center; min-height: 180px;">Buscando ilustración en Pixabay...</div>`;
-        
-        document.getElementById('slide-content').innerHTML = contenidoHtml;
+        viewer.innerHTML = `
+            <div class="gamma-slide-layout">
+                <div class="gamma-text-panel">
+                    <span style="font-size: 12px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 1px;">Unidad Didáctica UCRISH</span>
+                    <h2 id="slide-title">${slide.titulo}</h2>
+                    <p id="slide-content-text">${slide.contenido}</p>
+                    <div class="gamma-card-feature">
+                        💡 <b>Concepto clave:</b> Integración de competencias analíticas y prácticas para el desarrollo académico.
+                    </div>
+                </div>
+                <div class="gamma-image-panel" id="imagen-slide-container">
+                    <span style="color: #64748b; font-size: 13px;">Cargando recurso visual...</span>
+                </div>
+            </div>
+        `;
 
-        // Consultar Pixabay mediante el módulo recursos.js si está disponible
         if (slide.busquedaImagen && typeof buscarImagenPixabay === "function") {
             let urlImagen = await buscarImagenPixabay(slide.busquedaImagen);
             const contenedorImg = document.getElementById('imagen-slide-container');
             if (urlImagen && contenedorImg) {
-                contenedorImg.innerHTML = `<img src="${urlImagen}" alt="Pixabay visual" style="max-width: 100%; max-height: 280px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">`;
+                contenedorImg.innerHTML = `<img src="${urlImagen}" alt="Ilustración Gamma">`;
             } else if (contenedorImg) {
-                contenedorImg.innerHTML = `<p style="color: #888; font-size: 13px;">Imagen ilustrativa no disponible.</p>`;
+                contenedorImg.innerHTML = `<span style="color: #94a3b8; font-size: 13px;">Imagen de apoyo no disponible</span>`;
             }
         }
 
     } else if (slideActual === diapositivas.length) {
-        document.getElementById('slide-title').innerText = "🧩 Actividad: Sopa de Letras";
-        document.getElementById('slide-content').innerHTML = `<div id="contenedor-sopa"></div>`;
+        viewer.innerHTML = `
+            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+                <h2 style="color: #1e293b; font-size: 28px; margin-bottom: 10px;">🧩 Actividad Interactiva: Sopa de Letras</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Encuentra los términos clave asociados a la unidad de estudio.</p>
+                <div id="contenedor-sopa"></div>
+            </div>
+        `;
         if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras && typeof generarSopaDeLetras === "function") {
             generarSopaDeLetras('contenedor-sopa', datosPresentacion.actividades.sopaLetras.palabras);
         }
     } else {
-        document.getElementById('slide-title').innerText = "📝 Test Autoevaluable";
-        document.getElementById('slide-content').innerHTML = `<div id="contenedor-test"></div>`;
+        viewer.innerHTML = `
+            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+                <h2 style="color: #1e293b; font-size: 28px; margin-bottom: 10px;">📝 Autoevaluación de Conocimientos</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Pon a prueba tu comprensión sobre los temas abordados.</p>
+                <div id="contenedor-test"></div>
+            </div>
+        `;
         if (datosPresentacion.actividades && datosPresentacion.actividades.test && typeof generarTestAutoevaluable === "function") {
             generarTestAutoevaluable('contenedor-test', datosPresentacion.actividades.test.preguntas);
         }
     }
 
     let totalPasos = diapositivas.length + 2;
-    document.getElementById('indicador-paginas').innerText = `${slideActual + 1} / ${totalPasos}`;
+    document.getElementById('indicador-paginas').innerText = `Diapositiva ${slideActual + 1} de ${totalPasos}`;
 }
 
 function cambiarSlide(direccion) {
