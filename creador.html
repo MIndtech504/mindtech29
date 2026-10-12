@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modo Docente - Creador de Presentaciones</title>
+    <title>Modo Docente - Creador Inteligente de Presentaciones</title>
     <link rel="stylesheet" href="css/presentacion.css">
     <style>
         .form-container {
-            max-width: 700px;
+            max-width: 750px;
             margin: 20px auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             text-align: left;
         }
         .form-group {
@@ -33,29 +33,46 @@
         }
         textarea {
             resize: vertical;
-            height: 100px;
+            height: 90px;
         }
         .btn-volver {
             background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
             margin-bottom: 20px;
         }
-        .btn-volver:hover {
-            background-color: #707b7c;
+        .btn-ia {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 5px;
         }
-        .btn-guardar {
-            background-color: #e67e22;
-            width: 100%;
+        .acciones-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .btn-accion {
+            flex: 1;
             padding: 12px;
-            font-size: 18px;
+            font-size: 16px;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
         }
-        .btn-guardar:hover {
-            background-color: #d35400;
-        }
+        .btn-guardar { background-color: #e67e22; }
+        .btn-guardar:hover { background-color: #d35400; }
+        .btn-previsualizar { background-color: #27ae60; }
+        .btn-previsualizar:hover { background-color: #219653; }
     </style>
 </head>
 <body style="display: block; height: auto; padding: 20px;">
@@ -66,10 +83,10 @@
         </a>
 
         <h1 style="color: #2c3e50; font-size: 24px; border-bottom: 2px solid #eee; padding-bottom: 10px;">
-            👨‍🏫 Modo Docente: Creador de Unidades Didácticas
+            👨‍🏫 Modo Docente: Generador Inteligente UCRISH
         </h1>
 
-        <form id="docente-form" onsubmit="descargarJsonConfiguracion(event)">
+        <form id="docente-form">
             <div class="form-group">
                 <label for="institucion">Institución:</label>
                 <input type="text" id="institucion" value="UCRISH" required>
@@ -92,68 +109,106 @@
 
             <div class="form-group">
                 <label for="tema">Tema Principal:</label>
-                <input type="text" id="tema" value="Tipos de computadoras" required>
+                <input type="text" id="tema" value="Tipos de computadoras y su evolución" required>
             </div>
 
             <div class="form-group">
-                <label for="objetivos">Objetivos (separados por saltos de línea):</label>
-                <textarea id="objetivos">Identificar las clases de computadoras.
-Comprender sus diferencias de uso.</textarea>
+                <label for="numDiapositivas">Número de Diapositivas Deseadas:</label>
+                <select id="numDiapositivas">
+                    <option value="3">3 diapositivas (Breve)</option>
+                    <option value="5" selected>5 diapositivas (Estándar)</option>
+                    <option value="7">7 diapositivas (Extendido)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="objetivos">Objetivos de la Unidad:</label>
+                <textarea id="objetivos">Analizar las características principales de los sistemas tecnológicos.
+Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
+                <button type="button" class="btn-ia" onclick="autogenerarContenidoIA()">✨ Autogenerar Objetivos y Palabras con IA</button>
             </div>
 
             <div class="form-group">
                 <label for="palabrasSopa">Palabras clave para Sopa de Letras (separadas por comas):</label>
-                <input type="text" id="palabrasSopa" value="COMPUTADORA, LAPTOP, TABLET, SERVIDOR, RED">
+                <input type="text" id="palabrasSopa" value="TECNOLOGIA, COMPUTADORA, HARDWARE, SOFTWARE, RED">
             </div>
 
-            <button type="submit" class="btn-guardar">📥 Descargar Archivo JSON de la Semana</button>
+            <div classs="acciones-container" style="display: flex; gap: 15px; margin-top: 25px;">
+                <button type="button" class="btn-accion btn-guardar" onclick="descargarJsonConfiguracion()">📥 Descargar JSON de la Semana</button>
+                <button type="button" class="btn-accion btn-previsualizar" onclick="verPrevisualizacion()">👁️ Ver Presentación (Vista Previa)</button>
+            </div>
         </form>
     </div>
 
-    <script>
-        function descargarJsonConfiguracion(event) {
-            event.preventDefault();
-            
-            const numSemana = document.getElementById('semana').value.trim();
-            const semanaStr = numSemana.padStart(2, '0'); // Formato 01, 02...
+    <!-- Contenedor de Vista Previa Oculto inicialmente -->
+    <div id="vista-previa-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; padding:40px; box-sizing: border-box;">
+        <div style="background:white; max-width:700px; margin:0 auto; padding:30px; border-radius:10px; position:relative; text-align:left;">
+            <button onclick="cerrarPrevisualizacion()" style="position:absolute; top:15px; right:15px; background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">✕ Cerrar</button>
+            <h2 id="prev-titulo" style="color:#2c3e50; margin-top:0;"></h2>
+            <p id="prev-contenido" style="font-size:16px; color:#34495e; line-height:1.6;"></p>
+            <div id="prev-extra" style="margin-top:20px;"></div>
+        </div>
+    </div>
 
-            const configuracion = {
+    <script>
+        function autogenerarContenidoIA() {
+            const tema = document.getElementById('tema').value;
+            const asignatura = document.getElementById('asignatura').value;
+
+            document.getElementById('objetivos').value = `Comprender los fundamentos de ${tema} en el área de ${asignatura}.\nAplicar los conceptos teóricos en casos prácticos cotidianos.`;
+            document.getElementById('palabrasSopa').value = tema.toUpperCase().split(' ').join(', ') + ', APRENDIZAJE, CLASE, ESTUDIO';
+            alert("✨ ¡Objetivos y palabras clave generados inteligentemente a partir del tema!");
+        }
+
+        function construirDatosConfiguracion() {
+            const numSemana = document.getElementById('semana').value.trim();
+            const tema = document.getElementById('tema').value;
+            const numSlides = parseInt(document.getElementById('numDiapositivas').value);
+            const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
+            const palabrasArr = document.getElementById('palabrasSopa').value.split(',').map(p => p.trim());
+
+            let diapositivas = [];
+            for (let i = 1; i <= numSlides; i++) {
+                diapositivas.push({
+                    "titulo": i === 1 ? `Portada: ${tema}` : `Punto clave ${i}: ${tema} (Parte ${i})`,
+                    "contenido": i === 1 
+                        ? `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos fundamentales sobre ${tema}.`
+                        : `Continuando con el estudio de ${tema}, analizamos el bloque conceptual número ${i} enfocado en el desarrollo curricular de la asignatura.`,
+                    "busquedaImagen": `${tema} concept ${i}`
+                });
+            }
+
+            return {
                 "curso": {
                     "institucion": document.getElementById('institucion').value,
                     "asignatura": document.getElementById('asignatura').value,
                     "grado": document.getElementById('grado').value,
                     "semana": parseInt(numSemana),
-                    "tema": document.getElementById('tema').value
+                    "tema": tema
                 },
-                "diapositivas": [
-                    {
-                        "titulo": `Semana ${numSemana}: ${document.getElementById('tema').value}`,
-                        "contenido": `Bienvenidos a la asignatura de ${document.getElementById('asignatura').value}. Unidad dedicada a ${document.getElementById('tema').value}.`,
-                        "busquedaImagen": document.getElementById('tema').value
-                    }
-                ],
+                "objetivos": objetivosArr,
+                "diapositivas": diapositivas,
                 "actividades": {
-                    "sopaLetras": {
-                        "palabras": document.getElementById('palabrasSopa').value.split(',').map(p => p.trim())
-                    },
+                    "sopaLetras": { "palabras": palabrasArr },
                     "test": {
                         "preguntas": [
                             {
-                                "pregunta": `¿Cuál es el tema principal estudiado en la semana ${numSemana}?`,
-                                "opciones": [document.getElementById('tema').value, "Matemáticas avanzadas", "Historia antigua", "Química orgánica"],
+                                "pregunta": `¿Cuál es el enfoque principal del tema tratado (${tema})?`,
+                                "opciones": [tema, "Conceptos aleatorios sin relación", "Historia general desvinculada", "Ninguna de las anteriores"],
                                 "correcta": 0,
-                                "retroalimentacion": "Correcto, ese es el tema central abordado en esta unidad."
+                                "retroalimentacion": "¡Exacto! El núcleo de la unidad gira en torno a este concepto."
                             }
                         ]
                     }
-                },
-                "recursos": [
-                    { "titulo": "Material complementario de apoyo", "url": "#" }
-                ]
+                }
             };
+        }
 
-            // Crear un archivo descargable con formato JSON
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 4));
+        function descargarJsonConfiguracion() {
+            const config = construirDatosConfiguracion();
+            const semanaStr = String(config.curso.semana).padStart(2, '0');
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", `semana-${semanaStr}.json`);
@@ -161,7 +216,24 @@ Comprender sus diferencias de uso.</textarea>
             downloadAnchor.click();
             downloadAnchor.remove();
 
-            alert(`¡Archivo "semana-${semanaStr}.json" generado y descargado con éxito! Súbelo a tu carpeta "datos/" en GitHub.`);
+            alert(`¡Archivo "semana-${semanaStr}.json" descargado con éxito!`);
+        }
+
+        function verPrevisualizacion() {
+            const config = construirDatosConfiguracion();
+            const primeraDiapositiva = config.diapositivas[0];
+
+            document.getElementById('prev-titulo').innerText = primeraDiapositiva.titulo;
+            document.getElementById('prev-contenido').innerText = primeraDiapositiva.contenido;
+            document.getElementById('prev-extra').innerHTML = `
+                <p style="font-size:13px; color:#7f8c8d;"><b>Total de diapositivas configuradas:</b> ${config.diapositivas.length}</p>
+                <p style="font-size:13px; color:#7f8c8d;"><b>Palabras en Sopa de Letras:</b> ${config.actividades.sopaLetras.palabras.join(', ')}</p>
+            `;
+            document.getElementById('vista-previa-modal').style.display = 'block';
+        }
+
+        function cerrarPrevisualizacion() {
+            document.getElementById('vista-previa-modal').style.display = 'none';
         }
     </script>
 
