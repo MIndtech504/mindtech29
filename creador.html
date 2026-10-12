@@ -204,47 +204,57 @@ Diferenciar sus características estructurales.</textarea>
                 return;
             }
 
-            // Arreglo con exactamente 10 enfoques y párrafos únicos para cada diapositiva
+            // 10 enfoques con párrafos y términos de búsqueda visual ajustados a cada contenido
             const enfoquesDiapositivas = [
                 {
                     titulo: `Portada y Fundamentos: ${tema}`,
-                    contenido: `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos introductorios y conceptuales fundamentales sobre ${tema} para el nivel de ${grado}.`
+                    contenido: `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos introductorios y conceptuales fundamentales sobre ${tema} para el nivel de ${grado}.`,
+                    busqueda: `${tema} university education classroom`
                 },
                 {
                     titulo: `Contexto Histórico y Origen`,
-                    contenido: `El desarrollo de ${tema} surge de la necesidad de optimizar procesos dentro del área de ${asignatura}. Su evolución ha estado marcada por hitos que transformaron la perspectiva académica tradicional.`
+                    contenido: `El desarrollo de ${tema} surge de la necesidad de optimizar procesos dentro del área de ${asignatura}. Su evolución ha estado marcada por hitos que transformaron la perspectiva académica tradicional.`,
+                    busqueda: `history vintage old library study`
                 },
                 {
                     titulo: `Principios Teóricos Clave`,
-                    contenido: `Para comprender a fondo ${tema}, es indispensable analizar las reglas metodológicas y los axiomas principales que sustentan su validez científica y práctica.`
+                    contenido: `Para comprender a fondo ${tema}, es indispensable analizar las reglas metodológicas y los axiomas principales que sustentan su validez científica y práctica.`,
+                    busqueda: `science laboratory research concept`
                 },
                 {
                     titulo: `Componentes y Estructura`,
-                    contenido: `El análisis estructural revela que ${tema} se compone de elementos interdependientes que operan conjuntamente para garantizar un rendimiento óptimo en contextos reales.`
+                    contenido: `El análisis estructural revela que ${tema} se compone de elementos interdependientes que operan conjuntamente para garantizar un rendimiento óptimo en contextos reales.`,
+                    busqueda: `architecture structure puzzle connection`
                 },
                 {
                     titulo: `Metodologías de Aplicación`,
-                    contenido: `La aplicación práctica de ${tema} requiere seguir protocolos estandarizados que facilitan la correcta ejecución de los procedimientos técnicos y analíticos.`
+                    contenido: `La aplicación práctica de ${tema} requiere seguir protocolos estandarizados que facilitan la correcta ejecución de los procedimientos técnicos y analíticos.`,
+                    busqueda: `strategy planning business workflow`
                 },
                 {
                     titulo: `Herramientas y Recursos Tecnológicos`,
-                    contenido: `Hoy en día, el uso de herramientas especializadas potencia la eficiencia al trabajar con ${tema}, permitiendo automatizar procesos y obtener resultados precisos.`
+                    contenido: `Hoy en día, el uso de herramientas especializadas potencia la eficiencia al trabajar con ${tema}, permitiendo automatizar procesos y obtener resultados precisos.`,
+                    busqueda: `modern technology computer software`
                 },
                 {
                     titulo: `Ventajas y Beneficios Académicos`,
-                    contenido: `Estudiar ${tema} aporta beneficios significativos, tales como el pensamiento crítico, la resolución ágil de problemas complejos y la optimización del tiempo de estudio.`
+                    contenido: `Estudiar ${tema} aporta beneficios significativos, tales como el pensamiento crítico, la resolución ágil de problemas complejos y la optimización del tiempo de estudio.`,
+                    busqueda: `success achievement happy students`
                 },
                 {
                     titulo: `Retos Actuales y Limitaciones`,
-                    contenido: `A pesar de sus múltiples bondades, la implementación de ${tema} enfrenta desafíos contemporáneos relacionados con la adaptabilidad, los recursos y los cambios contextuales.`
+                    contenido: `A pesar de sus múltiples bondades, la implementación de ${tema} enfrenta desafíos contemporáneos relacionados con la adaptabilidad, los recursos y los cambios contextuales.`,
+                    busqueda: `business challenge problem solving`
                 },
                 {
                     titulo: `Casos de Estudio Prácticos`,
-                    contenido: `A través de ejemplos reales en el entorno de ${asignatura}, observamos cómo ${tema} se traduce en soluciones tangibles y casos de éxito comprobados.`
+                    contenido: `A través de ejemplos reales en el entorno de ${asignatura}, observamos cómo ${tema} se traduce en soluciones tangibles y casos de éxito comprobados.`,
+                    busqueda: `teamwork meeting office discussion`
                 },
                 {
                     titulo: `Conclusiones y Perspectivas Futuras`,
-                    contenido: `En síntesis, ${tema} representa un pilar fundamental cuyo dominio abrirá nuevas oportunidades de investigación y desarrollo profesional en el futuro cercano.`
+                    contenido: `En síntesis, ${tema} representa un pilar fundamental cuyo dominio abrirá nuevas oportunidades de investigación y desarrollo profesional en el futuro cercano.`,
+                    busqueda: `future innovation vision leadership`
                 }
             ];
 
@@ -253,7 +263,7 @@ Diferenciar sus características estructurales.</textarea>
                 diapositivas.push({
                     "titulo": `${index + 1}. ${item.titulo}`,
                     "contenido": item.contenido,
-                    "busquedaImagen": `${tema} education ${index + 1}`
+                    "busquedaImagen": item.busqueda
                 });
             });
 
