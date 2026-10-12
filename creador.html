@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modo Docente - Creador Inteligente de Presentaciones</title>
+    <title>Modo Docente - Creador Inteligente UCRISH</title>
     <link rel="stylesheet" href="css/presentacion.css">
     <style>
         .form-container {
@@ -68,11 +68,14 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-guardar { background-color: #e67e22; }
         .btn-guardar:hover { background-color: #d35400; }
-        .btn-previsualizar { background-color: #27ae60; }
-        .btn-previsualizar:hover { background-color: #219653; }
+        .btn-estudiante { background-color: #27ae60; }
+        .btn-estudiante:hover { background-color: #219653; }
     </style>
 </head>
 <body style="display: block; height: auto; padding: 20px;">
@@ -104,12 +107,12 @@
 
             <div class="form-group">
                 <label for="semana">Número de Semana:</label>
-                <input type="text" id="semana" value="1" required>
+                <input type="text" id="semana" value="6" oninput="actualizarTextoBotonEstudiante()" required>
             </div>
 
             <div class="form-group">
                 <label for="tema">Tema Principal:</label>
-                <input type="text" id="tema" value="Tipos de computadoras y su evolución" required>
+                <input type="text" id="tema" value="Tipos de textos" required>
             </div>
 
             <div class="form-group">
@@ -123,34 +126,30 @@
 
             <div class="form-group">
                 <label for="objetivos">Objetivos de la Unidad:</label>
-                <textarea id="objetivos">Analizar las características principales de los sistemas tecnológicos.
-Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
+                <textarea id="objetivos">Identificar los principales tipos de textos.
+Diferenciar sus características estructurales.</textarea>
                 <button type="button" class="btn-ia" onclick="autogenerarContenidoIA()">✨ Autogenerar Objetivos y Palabras con IA</button>
             </div>
 
             <div class="form-group">
                 <label for="palabrasSopa">Palabras clave para Sopa de Letras (separadas por comas):</label>
-                <input type="text" id="palabrasSopa" value="TECNOLOGIA, COMPUTADORA, HARDWARE, SOFTWARE, RED">
+                <input type="text" id="palabrasSopa" value="TEXTO, AUTOR, LECTURA, IDEA, PARRAFO, ARGUMENTO">
             </div>
 
-            <div classs="acciones-container" style="display: flex; gap: 15px; margin-top: 25px;">
+            <div class="acciones-container">
                 <button type="button" class="btn-accion btn-guardar" onclick="descargarJsonConfiguracion()">📥 Descargar JSON de la Semana</button>
-                <button type="button" class="btn-accion btn-previsualizar" onclick="verPrevisualizacion()">👁️ Ver Presentación (Vista Previa)</button>
+                <a href="presentacion.html" id="enlace-vista-estudiante" class="btn-accion btn-estudiante">👁️ Ver Semana 6 (Vista Estudiante)</a>
             </div>
         </form>
     </div>
 
-    <!-- Contenedor de Vista Previa Oculto inicialmente -->
-    <div id="vista-previa-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; padding:40px; box-sizing: border-box;">
-        <div style="background:white; max-width:700px; margin:0 auto; padding:30px; border-radius:10px; position:relative; text-align:left;">
-            <button onclick="cerrarPrevisualizacion()" style="position:absolute; top:15px; right:15px; background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">✕ Cerrar</button>
-            <h2 id="prev-titulo" style="color:#2c3e50; margin-top:0;"></h2>
-            <p id="prev-contenido" style="font-size:16px; color:#34495e; line-height:1.6;"></p>
-            <div id="prev-extra" style="margin-top:20px;"></div>
-        </div>
-    </div>
-
     <script>
+        function actualizarTextoBotonEstudiante() {
+            const numSemana = document.getElementById('semana').value.trim() || "X";
+            const btnEstudiante = document.getElementById('enlace-vista-estudiante');
+            btnEstudiante.innerText = `👁️ Ver Semana ${numSemana} (Vista Estudiante)`;
+        }
+
         function autogenerarContenidoIA() {
             const tema = document.getElementById('tema').value;
             const asignatura = document.getElementById('asignatura').value;
@@ -160,8 +159,9 @@ Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
             alert("✨ ¡Objetivos y palabras clave generados inteligentemente a partir del tema!");
         }
 
-        function construirDatosConfiguracion() {
+        function descargarJsonConfiguracion() {
             const numSemana = document.getElementById('semana').value.trim();
+            const semanaStr = String(numSemana).padStart(2, '0');
             const tema = document.getElementById('tema').value;
             const numSlides = parseInt(document.getElementById('numDiapositivas').value);
             const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
@@ -170,15 +170,15 @@ Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
             let diapositivas = [];
             for (let i = 1; i <= numSlides; i++) {
                 diapositivas.push({
-                    "titulo": i === 1 ? `Portada: ${tema}` : `Punto clave ${i}: ${tema} (Parte ${i})`,
+                    "titulo": i === 1 ? `Portada: Semana ${numSemana}` : `Punto clave ${i}: ${tema}`,
                     "contenido": i === 1 
-                        ? `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos fundamentales sobre ${tema}.`
-                        : `Continuando con el estudio de ${tema}, analizamos el bloque conceptual número ${i} enfocado en el desarrollo curricular de la asignatura.`,
-                    "busquedaImagen": `${tema} concept ${i}`
+                        ? `Bienvenidos a la unidad didáctica sobre ${tema}.`
+                        : `Desarrollo conceptual del bloque ${i} enfocado en ${tema}.`,
+                    "busquedaImagen": `${tema} education ${i}`
                 });
             }
 
-            return {
+            const configuracion = {
                 "curso": {
                     "institucion": document.getElementById('institucion').value,
                     "asignatura": document.getElementById('asignatura').value,
@@ -193,22 +193,17 @@ Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
                     "test": {
                         "preguntas": [
                             {
-                                "pregunta": `¿Cuál es el enfoque principal del tema tratado (${tema})?`,
-                                "opciones": [tema, "Conceptos aleatorios sin relación", "Historia general desvinculada", "Ninguna de las anteriores"],
+                                "pregunta": `¿Cuál es el tema principal abordado en la semana ${numSemana}?`,
+                                "opciones": [tema, "Concepto alternativo A", "Concepto alternativo B", "Concepto alternativo C"],
                                 "correcta": 0,
-                                "retroalimentacion": "¡Exacto! El núcleo de la unidad gira en torno a este concepto."
+                                "retroalimentacion": "¡Correcto! Ese es el tema central de la unidad."
                             }
                         ]
                     }
                 }
             };
-        }
 
-        function descargarJsonConfiguracion() {
-            const config = construirDatosConfiguracion();
-            const semanaStr = String(config.curso.semana).padStart(2, '0');
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 4));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
             downloadAnchor.setAttribute("download", `semana-${semanaStr}.json`);
@@ -217,23 +212,6 @@ Identificar las diferencias de uso según el tipo de dispositivo.</textarea>
             downloadAnchor.remove();
 
             alert(`¡Archivo "semana-${semanaStr}.json" descargado con éxito!`);
-        }
-
-        function verPrevisualizacion() {
-            const config = construirDatosConfiguracion();
-            const primeraDiapositiva = config.diapositivas[0];
-
-            document.getElementById('prev-titulo').innerText = primeraDiapositiva.titulo;
-            document.getElementById('prev-contenido').innerText = primeraDiapositiva.contenido;
-            document.getElementById('prev-extra').innerHTML = `
-                <p style="font-size:13px; color:#7f8c8d;"><b>Total de diapositivas configuradas:</b> ${config.diapositivas.length}</p>
-                <p style="font-size:13px; color:#7f8c8d;"><b>Palabras en Sopa de Letras:</b> ${config.actividades.sopaLetras.palabras.join(', ')}</p>
-            `;
-            document.getElementById('vista-previa-modal').style.display = 'block';
-        }
-
-        function cerrarPrevisualizacion() {
-            document.getElementById('vista-previa-modal').style.display = 'none';
         }
     </script>
 
