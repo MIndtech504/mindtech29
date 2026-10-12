@@ -3,35 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentación Interactiva - Estudiante</title>
+    <title>Presentación Interactiva - UCRISH</title>
     <link rel="stylesheet" href="css/presentacion.css">
+    <style>
+        /* Estilos ajustados para visualización completa y controles superiores */
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #app-container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+            justify-content: space-between;
+        }
+        #header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .btn-top {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-top:hover {
+            background-color: #1a252f;
+        }
+        .btn-fullscreen {
+            background-color: #16a085;
+        }
+        .btn-fullscreen:hover {
+            background-color: #117864;
+        }
+        #slide-viewer {
+            flex-grow: 1;
+            text-align: center;
+            padding: 20px;
+        }
+        #navegacion-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #edf2f7;
+            padding-top: 15px;
+            margin-top: 20px;
+        }
+        .btn-nav {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .btn-nav:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
     <div id="app-container">
-        <!-- Encabezado de la lección -->
-        <header id="curso-header">
-            <span id="info-institucion">Cargando...</span> | <span id="info-asignatura">Asignatura</span> - <span id="info-tema">Tema</span>
-        </header>
+        <!-- Barra superior con accesos a Inicio y Pantalla Completa -->
+        <div id="header-bar">
+            <a href="index.html" style="text-decoration: none;">
+                <button class="btn-top">🏠 Menú Principal</button>
+            </a>
+            <div id="info-curso" style="font-weight: bold; color: #34495e; font-size: 15px;">
+                <span id="info-institucion">UCRISH</span> | <span id="info-asignatura">Asignatura</span> - <span id="info-tema">Tema</span>
+            </div>
+            <button class="btn-top btn-fullscreen" onclick="alternarPantallaCompleta()">⛶ Pantalla Completa</button>
+        </div>
 
-        <!-- Contenedor principal de diapositivas -->
+        <!-- Contenedor principal de la Diapositiva -->
         <main id="slide-viewer">
-            <h2 id="slide-title">Cargando presentación...</h2>
-            <div id="slide-content">Por favor espere un momento.</div>
+            <h2 id="slide-title" style="color: #2c3e50; margin-top: 0;">Cargando presentación...</h2>
+            <div id="slide-content" style="font-size: 17px; color: #555; line-height: 1.6;">Por favor espere un momento.</div>
         </main>
 
-        <!-- Barra de navegación del estudiante -->
+        <!-- Barra de Navegación Inferior -->
         <footer id="navegacion-footer">
-            <button id="btn-anterior" onclick="cambiarSlide(-1)">← Anterior</button>
-            <span id="indicador-paginas">1 / 1</span>
-            <button id="btn-siguiente" onclick="cambiarSlide(1)">Siguiente →</button>
+            <button class="btn-nav" id="btn-anterior" onclick="cambiarSlide(-1)">← Anterior</button>
+            <span id="indicador-paginas" style="font-weight: bold; font-size: 16px; color: #2c3e50;">1 / 1</span>
+            <button class="btn-nav" id="btn-siguiente" onclick="cambiarSlide(1)">Siguiente →</button>
         </footer>
     </div>
 
-    <!-- Scripts de actividades y evaluación -->
+    <!-- Módulos de la aplicación -->
     <script src="js/recursos.js"></script>
     <script src="js/actividades.js"></script>
     <script src="js/evaluacion.js"></script>
     <script src="js/exportacion.js"></script>
     <script src="js/presentacion.js"></script>
-    </body>
+</body>
 </html>
