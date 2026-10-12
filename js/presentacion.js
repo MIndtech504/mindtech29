@@ -1,41 +1,70 @@
+// Función para alternar el modo Pantalla Completa
+function alternarPantallaCompleta() {
+    const elem = document.documentElement; // O el contenedor id="app-container"
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
+// Datos de prueba integrados con lectura completa
 let datosPresentacionLocal = {
     "curso": {
         "institucion": "UCRISH",
-        "asignatura": "Español",
-        "grado": "10.º grado",
-        "semana": 6,
-        "tema": "Tipos de textos"
+        "asignatura": "Tecnología",
+        "grado": "9.º grado",
+        "semana": 1,
+        "tema": "Tipos de computadoras y su evolución"
     },
     "diapositivas": [
         {
-            "titulo": "Portada: Semana 6",
-            "contenido": "Bienvenidos a la unidad didáctica sobre los Tipos de Textos.",
-            "busquedaImagen": "education books classroom"
+            "titulo": "Portada: Tipos de Computadoras",
+            "contenido": "Bienvenidos a la lección de la Semana 1. En esta unidad exploraremos el impacto y la clasificación de los equipos de cómputo.",
+            "busquedaImagen": "computers technology history"
         },
         {
-            "titulo": "Introducción a los Textos",
-            "contenido": "Los textos se clasifican según su intención comunicativa: informativos, argumentativos, literarios, periodísticos, etc.",
-            "busquedaImagen": "reading writing literature"
+            "titulo": "Computadoras Personales y Portátiles",
+            "contenido": "Las laptops y PCs de escritorio están diseñadas para el trabajo diario, ofreciendo potencia suficiente para tareas académicas y profesionales.",
+            "busquedaImagen": "laptop desk office"
+        },
+        {
+            "titulo": "Servidores y Supercomputadoras",
+            "contenido": "Son equipos de alto rendimiento diseñados para procesar grandes volúmenes de datos, gestionar redes e impulsar la inteligencia artificial.",
+            "busquedaImagen": "server room datacenter"
         }
     ],
     "actividades": {
         "sopaLetras": {
-            "palabras": ["TEXTO", "AUTOR", "LECTURA", "IDEA", "PARRAFO", "ARGUMENTO"]
+            "palabras": ["COMPUTADORA", "LAPTOP", "SERVIDOR", "HARDWARE", "SOFTWARE"]
         },
         "test": {
             "preguntas": [
                 {
-                    "pregunta": "¿Cuál de los siguientes es un texto argumentativo?",
-                    "opciones": ["Una receta de cocina", "Un ensayo crítico", "Una descripción física", "Una lista de compras"],
-                    "correcta": 1,
-                    "retroalimentacion": "El ensayo busca defender una postura mediante argumentos."
+                    "pregunta": "¿Qué tipo de computadora está diseñada para gestionar redes y almacenar grandes volúmenes de datos?",
+                    "opciones": ["Servidor", "Calculadora", "Reloj inteligente", "Tablet"],
+                    "correcta": 0,
+                    "retroalimentacion": "¡Correcto! Los servidores se encargan de gestionar servicios e información en red."
                 }
             ]
         }
-    },
-    "recursos": [
-        { "titulo": "Guía completa de tipología textual (PDF)", "url": "#" }
-    ]
+    }
 };
 
 let datosPresentacion = datosPresentacionLocal;
@@ -56,26 +85,19 @@ async function mostrarSlide() {
         let slide = diapositivas[slideActual];
         document.getElementById('slide-title').innerText = slide.titulo;
         
-        let contenidoHtml = `<p style="font-size: 16px; color: #34495e; line-height: 1.6;">${slide.contenido}</p>`;
-        contenidoHtml += `<div id="imagen-slide-container" style="margin-top: 15px; text-align: center; min-height: 150px;">Buscando imagen educativa...</div>`;
-        contenidoHtml += `<div id="recursos-slide-container"></div>`;
+        let contenidoHtml = `<p style="font-size: 17px; color: #34495e; line-height: 1.6;">${slide.contenido}</p>`;
+        contenidoHtml += `<div id="imagen-slide-container" style="margin-top: 15px; text-align: center; min-height: 180px;">Buscando ilustración en Pixabay...</div>`;
         
         document.getElementById('slide-content').innerHTML = contenidoHtml;
 
-        // Consultar Pixabay usando el módulo recursos.js
-        if (slide.busquedaImagen) {
+        if (slide.busquedaImagen && typeof buscarImagenPixabay === "function") {
             let urlImagen = await buscarImagenPixabay(slide.busquedaImagen);
             const contenedorImg = document.getElementById('imagen-slide-container');
             if (urlImagen && contenedorImg) {
-                contenedorImg.innerHTML = `<img src="${urlImagen}" alt="Pixabay visual" style="max-width: 100%; max-height: 220px; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.15); object-fit: cover;">`;
+                contenedorImg.innerHTML = `<img src="${urlImagen}" alt="Pixabay visual" style="max-width: 100%; max-height: 280px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); object-fit: cover;">`;
             } else if (contenedorImg) {
-                contenedorImg.innerHTML = `<p style="color: #888; font-size: 13px;">Ilustración no disponible.</p>`;
+                contenedorImg.innerHTML = `<p style="color: #888; font-size: 13px;">Imagen ilustrativa no disponible.</p>`;
             }
-        }
-
-        // Renderizar recursos extra si estamos en la última diapositiva
-        if (slideActual === diapositivas.length - 1 && datosPresentacion.recursos) {
-            renderizarRecursosExtra('recursos-slide-container', datosPresentacion.recursos);
         }
 
     } else if (slideActual === diapositivas.length) {
@@ -107,23 +129,3 @@ function cambiarSlide(direccion) {
 }
 
 window.onload = cargarPresentacion;
-// Agregar al final de cargarPresentacion() o en mostrarSlide()
-function agregarBotonExportacionAlNavegador() {
-    const footer = document.getElementById('navegacion-footer');
-    if (footer && !document.getElementById('btn-exportar-pdf')) {
-        const btnExportar = document.createElement('button');
-        btnExportar.id = 'btn-exportar-pdf';
-        btnExportar.innerText = "📄 PDF";
-        btnExportar.style.cssText = `
-            background-color: #8e44ad;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        `;
-        btnExportar.onclick = () => window.print();
-        footer.appendChild(btnExportar);
-    }
-}
