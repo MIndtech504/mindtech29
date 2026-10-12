@@ -24,25 +24,41 @@ function mostrarSlide() {
     if (slideActual < diapositivas.length) {
         let slide = diapositivas[slideActual];
         document.getElementById('slide-title').innerText = slide.titulo;
-        document.getElementById('slide-content').innerHTML = `<p>${slide.contenido}</p>`;
-    } else {
-        // Pantalla de Actividades Interactivas al finalizar las diapositivas
-        document.getElementById('slide-title').innerText = "🧩 Actividades Formativas Interactivas";
-        document.getElementById('slide-content').innerHTML = `<div id="contenedor-sopa"></div>`;
         
-        // Llamar a la función del archivo actividades.js
+        // Generar HTML incluyendo la imagen si existe en el JSON
+        let contenidoHtml = `<p style="font-size: 16px; color: #34495e;">${slide.contenido}</p>`;
+        if (slide.imagen) {
+            contenidoHtml += `
+                <div style="margin-top: 15px; text-align: center;">
+                    <img src="${slide.imagen}" alt="Recurso visual" style="max-width: 100%; max-height: 250px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                </div>
+            `;
+        }
+        document.getElementById('slide-content').innerHTML = contenidoHtml;
+
+    } else if (slideActual === diapositivas.length) {
+        // Pantalla de Sopa de Letras
+        document.getElementById('slide-title').innerText = "🧩 Actividad: Sopa de Letras";
+        document.getElementById('slide-content').innerHTML = `<div id="contenedor-sopa"></div>`;
         if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras) {
             generarSopaDeLetras('contenedor-sopa', datosPresentacion.actividades.sopaLetras.palabras);
         }
+    } else {
+        // Pantalla de Test Autoevaluable
+        document.getElementById('slide-title').innerText = "📝 Test Autoevaluable";
+        document.getElementById('slide-content').innerHTML = `<div id="contenedor-test"></div>`;
+        if (datosPresentacion.actividades && datosPresentacion.actividades.test) {
+            generarTestAutoevaluable('contenedor-test', datosPresentacion.actividades.test.preguntas);
+        }
     }
 
-    // El total de páginas incluye las diapositivas + 1 pantalla final de actividades
-    let totalPasos = diapositivas.length + 1;
+    // Total de pasos = diapositivas + Sopa de Letras + Test Autoevaluable
+    let totalPasos = diapositivas.length + 2;
     document.getElementById('indicador-paginas').innerText = `${slideActual + 1} / ${totalPasos}`;
 }
 
 function cambiarSlide(direccion) {
-    let totalPasos = datosPresentacion.diapositivas.length + 1;
+    let totalPasos = datosPresentacion.diapositivas.length + 2;
     slideActual += direccion;
     
     if (slideActual < 0) slideActual = 0;
