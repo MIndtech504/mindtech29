@@ -107,3 +107,23 @@ function cambiarSlide(direccion) {
 }
 
 window.onload = cargarPresentacion;
+// Agregar al final de cargarPresentacion() o en mostrarSlide()
+function agregarBotonExportacionAlNavegador() {
+    const footer = document.getElementById('navegacion-footer');
+    if (footer && !document.getElementById('btn-exportar-pdf')) {
+        const btnExportar = document.createElement('button');
+        btnExportar.id = 'btn-exportar-pdf';
+        btnExportar.innerText = "📄 PDF";
+        btnExportar.style.cssText = `
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        `;
+        btnExportar.onclick = () => window.print();
+        footer.appendChild(btnExportar);
+    }
+}
