@@ -162,21 +162,65 @@ Diferenciar sus características estructurales.</textarea>
             document.getElementById('objetivos').value = `Comprender los fundamentos de ${tema} en el área de ${asignatura}.\nAplicar los conceptos teóricos en casos prácticos cotidianos.`;
             document.getElementById('palabrasSopa').value = tema.toUpperCase().split(' ').join(', ') + ', APRENDIZAJE, CLASE, ESTUDIO';
             alert("✨ ¡Objetivos y palabras clave generados inteligentemente a partir del tema!");
+      function generarPresentacion() {
+    const numSemana = document.getElementById('semana').value.trim();
+    const tema = document.getElementById('tema').value;
+    const numSlides = parseInt(document.getElementById('numDiapositivas').value);
+    const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
+    const palabrasArr = document.getElementById('palabrasSopa').value.split(',').map(p => p.trim());
+
+    let diapositivas = [];
+    for (let i = 1; i <= numSlides; i++) {
+        diapositivas.push({
+            "titulo": i === 1 ? `Portada: ${tema}` : `Punto clave ${i}: ${tema} (Parte ${i})`,
+            "contenido": i === 1 
+                ? `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos fundamentales sobre ${tema}.`
+                : `Continuando con el estudio de ${tema}, analizamos el bloque conceptual número ${i} enfocado en el desarrollo curricular de la asignatura.`,
+            "busquedaImagen": `${tema} concept ${i}`
+        });
+    }
+
+    // Crear el objeto de configuración completo
+    const configuracionPersonalizada = {
+        "curso": {
+            "institucion": document.getElementById('institucion').value,
+            "asignatura": document.getElementById('asignatura').value,
+            "grado": document.getElementById('grado').value,
+            "semana": parseInt(numSemana),
+            "tema": tema
+        },
+        "objetivos": objetivosArr,
+        "diapositivas": diapositivas,
+        "actividades": {
+            "sopaLetras": { "palabras": palabrasArr },
+            "test": {
+                "preguntas": [
+                    {
+                        "pregunta": `¿Cuál es el enfoque principal del tema tratado (${tema})?`,
+                        "opciones": [tema, "Conceptos aleatorios sin relación", "Historia general desvinculada", "Ninguna de las anteriores"],
+                        "correcta": 0,
+                        "retroalimentacion": "¡Exacto! El núcleo de la unidad gira en torno a este concepto."
+                    }
+                ]
+            }
         }
+    };
 
-        function generarPresentacion() {
-            // Habilitar los botones de Ver presentación y Copiar HTML tras generar
-            const btnVer = document.getElementById('btn-ver-presentacion');
-            const btnCopiar = document.getElementById('btn-copiar-html');
+    // Guardar en localStorage para que la vista del estudiante lo lea
+    localStorage.setItem('ucrish_presentacion_activa', JSON.stringify(configuracionPersonalizada));
 
-            btnVer.removeAttribute('disabled');
-            btnVer.style.pointerEvents = 'auto';
-            btnVer.style.opacity = '1';
+    // Habilitar los botones de Ver presentación y Copiar HTML
+    const btnVer = document.getElementById('btn-ver-presentacion');
+    const btnCopiar = document.getElementById('btn-copiar-html');
 
-            btnCopiar.removeAttribute('disabled');
+    btnVer.removeAttribute('disabled');
+    btnVer.style.pointerEvents = 'auto';
+    btnVer.style.opacity = '1';
 
-            alert("⚙️ ¡Presentación generada con éxito! Ya puedes ver la presentación o copiar el código HTML.");
-        }
+    btnCopiar.removeAttribute('disabled');
+
+    alert("⚙️ ¡Presentación generada con éxito! Los datos se han sincronizado para la vista del estudiante.");
+}
 
         function copiarCodigoHtml() {
             const tema = document.getElementById('tema').value;
