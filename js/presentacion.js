@@ -1,30 +1,6 @@
-// Función para alternar el modo Pantalla Completa
-function alternarPantallaCompleta() {
-    const elem = document.documentElement; // O el contenedor id="app-container"
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-    }
-}
+// Módulo Principal del Visor de Presentaciones - UCRISH
 
-// Datos de prueba integrados con lectura completa
+// Intentar cargar la presentación personalizada desde el Creador (localStorage) o usar valores predeterminados
 let datosPresentacionLocal = {
     "curso": {
         "institucion": "UCRISH",
@@ -67,19 +43,55 @@ let datosPresentacionLocal = {
     }
 };
 
+// Comprobar si el docente guardó una configuración previa en el navegador
+const datosGuardados = localStorage.getItem('ucrish_presentacion_activa');
+if (datosGuardados) {
+    try {
+        datosPresentacionLocal = JSON.parse(datosGuardados);
+    } catch (e) {
+        console.error("Error al leer los datos guardados en localStorage:", e);
+    }
+}
+
 let datosPresentacion = datosPresentacionLocal;
 let slideActual = 0;
 
+// Función para alternar el modo Pantalla Completa
+function alternarPantallaCompleta() {
+    const elem = document.documentElement;
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
 function cargarPresentacion() {
-    document.getElementById('info-institucion').innerText = datosPresentacion.curso.institucion;
-    document.getElementById('info-asignatura').innerText = datosPresentacion.curso.asignatura;
-    document.getElementById('info-tema').innerText = `Semana ${datosPresentacion.curso.semana}: ${datosPresentacion.curso.tema}`;
+    document.getElementById('info-institucion').innerText = datosPresentacion.curso.institucion || "UCRISH";
+    document.getElementById('info-asignatura').innerText = datosPresentacion.curso.asignatura || "";
+    document.getElementById('info-tema').innerText = `Semana ${datosPresentacion.curso.semana || 1}: ${datosPresentacion.curso.tema || ""}`;
 
     mostrarSlide();
 }
 
 async function mostrarSlide() {
-    let diapositivas = datosPresentacion.diapositivas;
+    let diapositivas = datosPresentacion.diapositivas || [];
     
     if (slideActual < diapositivas.length) {
         let slide = diapositivas[slideActual];
@@ -90,6 +102,7 @@ async function mostrarSlide() {
         
         document.getElementById('slide-content').innerHTML = contenidoHtml;
 
+        // Consultar Pixabay mediante el módulo recursos.js si está disponible
         if (slide.busquedaImagen && typeof buscarImagenPixabay === "function") {
             let urlImagen = await buscarImagenPixabay(slide.busquedaImagen);
             const contenedorImg = document.getElementById('imagen-slide-container');
@@ -103,13 +116,13 @@ async function mostrarSlide() {
     } else if (slideActual === diapositivas.length) {
         document.getElementById('slide-title').innerText = "🧩 Actividad: Sopa de Letras";
         document.getElementById('slide-content').innerHTML = `<div id="contenedor-sopa"></div>`;
-        if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras) {
+        if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras && typeof generarSopaDeLetras === "function") {
             generarSopaDeLetras('contenedor-sopa', datosPresentacion.actividades.sopaLetras.palabras);
         }
     } else {
         document.getElementById('slide-title').innerText = "📝 Test Autoevaluable";
         document.getElementById('slide-content').innerHTML = `<div id="contenedor-test"></div>`;
-        if (datosPresentacion.actividades && datosPresentacion.actividades.test) {
+        if (datosPresentacion.actividades && datosPresentacion.actividades.test && typeof generarTestAutoevaluable === "function") {
             generarTestAutoevaluable('contenedor-test', datosPresentacion.actividades.test.preguntas);
         }
     }
@@ -119,7 +132,7 @@ async function mostrarSlide() {
 }
 
 function cambiarSlide(direccion) {
-    let totalPasos = datosPresentacion.diapositivas.length + 2;
+    let totalPasos = (datosPresentacion.diapositivas ? datosPresentacion.diapositivas.length : 0) + 2;
     slideActual += direccion;
     
     if (slideActual < 0) slideActual = 0;
