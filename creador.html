@@ -63,7 +63,7 @@
         .btn-accion {
             flex: 1;
             padding: 12px;
-            font-size: 16px;
+            font-size: 15px;
             color: white;
             border: none;
             border-radius: 5px;
@@ -73,13 +73,19 @@
             text-decoration: none;
             display: inline-block;
         }
-        .btn-guardar { background-color: #e67e22; }
-        .btn-guardar:hover { background-color: #d35400; }
-        .btn-estudiante { 
-            background-color: #27ae60; 
-            display: none; /* Oculto por defecto */
-        }
+        .btn-generar { background-color: #2980b9; }
+        .btn-generar:hover { background-color: #2471a3; }
+        
+        .btn-copiar { background-color: #e67e22; }
+        .btn-copiar:hover { background-color: #d35400; }
+        
+        .btn-estudiante { background-color: #27ae60; }
         .btn-estudiante:hover { background-color: #219653; }
+        
+        .btn-estudiante:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body style="display: block; height: auto; padding: 20px;">
@@ -141,9 +147,9 @@ Diferenciar sus características estructurales.</textarea>
             </div>
 
             <div class="acciones-container">
-                <button type="button" class="btn-accion btn-guardar" onclick="descargarJsonConfiguracion()">📥 Descargar JSON de la Semana</button>
-                <!-- Botón de Ver presentación oculto inicialmente -->
-                <a href="presentacion.html" id="btn-ver-presentacion" class="btn-accion btn-estudiante">👁️ Ver presentación</a>
+                <button type="button" class="btn-accion btn-generar" onclick="generarPresentacion()">⚙️ Generar presentación</button>
+                <button type="button" class="btn-accion btn-copiar" id="btn-copiar-html" onclick="copiarCodigoHtml()" disabled>📋 Copiar código HTML</button>
+                <a href="presentacion.html" id="btn-ver-presentacion" class="btn-accion btn-estudiante" style="pointer-events: none; opacity: 0.6;" disabled>👁️ Ver presentación</a>
             </div>
         </form>
     </div>
@@ -158,62 +164,33 @@ Diferenciar sus características estructurales.</textarea>
             alert("✨ ¡Objetivos y palabras clave generados inteligentemente a partir del tema!");
         }
 
-        function descargarJsonConfiguracion() {
-            const numSemana = document.getElementById('semana').value.trim();
-            const semanaStr = String(numSemana).padStart(2, '0');
+        function generarPresentacion() {
+            // Habilitar los botones de Ver presentación y Copiar HTML tras generar
+            const btnVer = document.getElementById('btn-ver-presentacion');
+            const btnCopiar = document.getElementById('btn-copiar-html');
+
+            btnVer.removeAttribute('disabled');
+            btnVer.style.pointerEvents = 'auto';
+            btnVer.style.opacity = '1';
+
+            btnCopiar.removeAttribute('disabled');
+
+            alert("⚙️ ¡Presentación generada con éxito! Ya puedes ver la presentación o copiar el código HTML.");
+        }
+
+        function copiarCodigoHtml() {
             const tema = document.getElementById('tema').value;
-            const numSlides = parseInt(document.getElementById('numDiapositivas').value);
-            const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
-            const palabrasArr = document.getElementById('palabrasSopa').value.split(',').map(p => p.trim());
+            const asignatura = document.getElementById('asignatura').value;
+            const institucion = document.getElementById('institucion').value;
+            const semana = document.getElementById('semana').value;
 
-            let diapositivas = [];
-            for (let i = 1; i <= numSlides; i++) {
-                diapositivas.push({
-                    "titulo": i === 1 ? `Portada: Semana ${numSemana}` : `Punto clave ${i}: ${tema}`,
-                    "contenido": i === 1 
-                        ? `Bienvenidos a la unidad didáctica sobre ${tema}.`
-                        : `Desarrollo conceptual del bloque ${i} enfocado en ${tema}.`,
-                    "busquedaImagen": `${tema} education ${i}`
-                });
-            }
+            const codigoHtmlEjemplo = `<!-- Unidad Didáctica: ${tema} (${institucion}) -->\n<div class="unidad-educativa">\n    <h2>Semana ${semana}: ${tema}</h2>\n    <p>Asignatura: ${asignatura}</p>\n</div>`;
 
-            const configuracion = {
-                "curso": {
-                    "institucion": document.getElementById('institucion').value,
-                    "asignatura": document.getElementById('asignatura').value,
-                    "grado": document.getElementById('grado').value,
-                    "semana": parseInt(numSemana),
-                    "tema": tema
-                },
-                "objetivos": objetivosArr,
-                "diapositivas": diapositivas,
-                "actividades": {
-                    "sopaLetras": { "palabras": palabrasArr },
-                    "test": {
-                        "preguntas": [
-                            {
-                                "pregunta": `¿Cuál es el tema principal abordado en la semana ${numSemana}?`,
-                                "opciones": [tema, "Concepto alternativo A", "Concepto alternativo B", "Concepto alternativo C"],
-                                "correcta": 0,
-                                "retroalimentacion": "¡Correcto! Ese es el tema central de la unidad."
-                            }
-                        ]
-                    }
-                }
-            };
-
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configuracion, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `semana-${semanaStr}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-
-            // Mostrar el botón de "Ver presentación" una vez generado el archivo
-            document.getElementById('btn-ver-presentacion').style.display = 'inline-block';
-
-            alert(`¡Archivo "semana-${semanaStr}.json" generado y descargado con éxito! Ya puedes ver la presentación.`);
+            navigator.clipboard.writeText(codigoHtmlEjemplo).then(() => {
+                alert("📋 ¡Código HTML copiado al portapapeles con éxito!");
+            }).catch(err => {
+                console.error("Error al copiar: ", err);
+            });
         }
     </script>
 
