@@ -1,4 +1,4 @@
-// Visor de Presentaciones Estilo Gamma - UCRISH
+// Módulo Principal del Visor de Presentaciones - UCRISH
 
 let datosPresentacionLocal = {
     "curso": {
@@ -21,9 +21,6 @@ let datosPresentacionLocal = {
         }
     ],
     "actividades": {
-        "sopaLetras": {
-            "palabras": ["COMUNICACION", "ORAL", "MENSAJE", "EMISOR", "RECEPTOR"]
-        },
         "test": {
             "preguntas": [
                 {
@@ -102,33 +99,70 @@ async function mostrarSlide() {
     } else if (slideActual === diapositivas.length) {
         viewer.innerHTML = `
             <div style="text-align: center; max-width: 700px; margin: 0 auto;">
-                <h2 style="color: #1e293b; font-size: 28px; margin-bottom: 10px;">🧩 Actividad Interactiva: Sopa de Letras</h2>
-                <p style="color: #64748b; margin-bottom: 20px;">Encuentra los términos clave asociados a la unidad de estudio.</p>
-                <div id="contenedor-sopa"></div>
-            </div>
-        `;
-        if (datosPresentacion.actividades && datosPresentacion.actividades.sopaLetras && typeof generarSopaDeLetras === "function") {
-            generarSopaDeLetras('contenedor-sopa', datosPresentacion.actividades.sopaLetras.palabras);
-        }
-    } else {
-        viewer.innerHTML = `
-            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
-                <h2 style="color: #1e293b; font-size: 28px; margin-bottom: 10px;">📝 Autoevaluación de Conocimientos</h2>
-                <p style="color: #64748b; margin-bottom: 20px;">Pon a prueba tu comprensión sobre los temas abordados.</p>
+                <h2 style="color: #1e293b; font-size: 26px; margin-bottom: 10px;">📝 Actividad: Test de Opción Múltiple</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Responde correctamente a las preguntas de evaluación.</p>
                 <div id="contenedor-test"></div>
             </div>
         `;
-        if (datosPresentacion.actividades && datosPresentacion.actividades.test && typeof generarTestAutoevaluable === "function") {
-            generarTestAutoevaluable('contenedor-test', datosPresentacion.actividades.test.preguntas);
+        const preguntasTest = (datosPresentacion.actividades && datosPresentacion.actividades.test && datosPresentacion.actividades.test.preguntas) ? 
+            datosPresentacion.actividades.test.preguntas : 
+            [
+                {
+                    "pregunta": "¿Cuál es el enfoque principal del tema tratado?",
+                    "opciones": ["Concepto central de la unidad", "Ideas secundarias", "Datos irrelevantes", "Ninguna"],
+                    "correcta": 0,
+                    "retroalimentacion": "¡Exacto! Ese es el núcleo de la lección."
+                }
+            ];
+
+        if (typeof generarTestAutoevaluable === "function") {
+            generarTestAutoevaluable('contenedor-test', preguntasTest);
+        }
+
+    } else if (slideActual === diapositivas.length + 1) {
+        viewer.innerHTML = `
+            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+                <h2 style="color: #1e293b; font-size: 26px; margin-bottom: 10px;">🎯 Actividad: Seleccionar Opciones</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Marca todas las afirmaciones correctas.</p>
+                <div id="contenedor-seleccion"></div>
+            </div>
+        `;
+        if (typeof generarSeleccionOpciones === "function") {
+            generarSeleccionOpciones('contenedor-seleccion', {
+                "enunciado": "Selecciona las características principales estudiadas en esta unidad:",
+                "opciones": [
+                    { "texto": "Análisis conceptual profundo", "esCorrecta": true },
+                    { "texto": "Información completamente desvinculada", "esCorrecta": false },
+                    { "texto": "Aplicación práctica en el aula", "esCorrecta": true },
+                    { "texto": "Memorización sin comprensión", "esCorrecta": false }
+                ]
+            });
+        }
+
+    } else {
+        viewer.innerHTML = `
+            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+                <h2 style="color: #1e293b; font-size: 26px; margin-bottom: 10px;">🧩 Actividad: Arrastrar y Soltar</h2>
+                <p style="color: #64748b; margin-bottom: 20px;">Relaciona cada concepto con su definición correcta.</p>
+                <div id="contenedor-drag"></div>
+            </div>
+        `;
+        if (typeof generarArrastrarSoltar === "function") {
+            generarArrastrarSoltar('contenedor-drag', {
+                "pares": [
+                    { "concepto": "Teoría", "definicion": "Conjunto de reglas y principios sobre una materia." },
+                    { "concepto": "Práctica", "definicion": "Ejecución de los conocimientos teóricos adquiridos." }
+                ]
+            });
         }
     }
 
-    let totalPasos = diapositivas.length + 2;
+    let totalPasos = diapositivas.length + 3;
     document.getElementById('indicador-paginas').innerText = `Diapositiva ${slideActual + 1} de ${totalPasos}`;
 }
 
 function cambiarSlide(direccion) {
-    let totalPasos = (datosPresentacion.diapositivas ? datosPresentacion.diapositivas.length : 0) + 2;
+    let totalPasos = (datosPresentacion.diapositivas ? datosPresentacion.diapositivas.length : 0) + 3;
     slideActual += direccion;
     
     if (slideActual < 0) slideActual = 0;
