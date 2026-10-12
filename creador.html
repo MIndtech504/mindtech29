@@ -30,6 +30,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
+            box-sizing: border-box;
         }
         textarea {
             resize: vertical;
@@ -48,11 +49,15 @@
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 13px;
-            margin-top: 5px;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+        .btn-ia:hover {
+            background-color: #2980b9;
         }
         .acciones-container {
             display: flex;
@@ -82,9 +87,10 @@
         .btn-estudiante { background-color: #27ae60; }
         .btn-estudiante:hover { background-color: #219653; }
         
-        .btn-estudiante:disabled {
+        .btn-estudiante:disabled, .btn-copiar:disabled {
             background-color: #bdc3c7;
             cursor: not-allowed;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -99,7 +105,7 @@
             👨‍🏫 Modo Docente: Generador Inteligente UCRISH
         </h1>
 
-        <form id="docente-form">
+        <form id="docente-form" onsubmit="event.preventDefault();">
             <div class="form-group">
                 <label for="institucion">Institución:</label>
                 <input type="text" id="institucion" value="UCRISH" required>
@@ -149,78 +155,116 @@ Diferenciar sus características estructurales.</textarea>
             <div class="acciones-container">
                 <button type="button" class="btn-accion btn-generar" onclick="generarPresentacion()">⚙️ Generar presentación</button>
                 <button type="button" class="btn-accion btn-copiar" id="btn-copiar-html" onclick="copiarCodigoHtml()" disabled>📋 Copiar código HTML</button>
-                <a href="presentacion.html" id="btn-ver-presentacion" class="btn-accion btn-estudiante" style="pointer-events: none; opacity: 0.6;" disabled>👁️ Ver presentación</a>
+                <a href="presentacion.html" id="btn-ver-presentacion" class="btn-accion btn-estudiante" style="pointer-events: none;" disabled>👁️ Ver presentación</a>
             </div>
         </form>
     </div>
 
     <script>
         function autogenerarContenidoIA() {
-            const tema = document.getElementById('tema').value;
-            const asignatura = document.getElementById('asignatura').value;
+            const temaInput = document.getElementById('tema');
+            const asignaturaInput = document.getElementById('asignatura');
+            const objetivosArea = document.getElementById('objetivos');
+            const palabrasInput = document.getElementById('palabrasSopa');
 
-            document.getElementById('objetivos').value = `Comprender los fundamentos de ${tema} en el área de ${asignatura}.\nAplicar los conceptos teóricos en casos prácticos cotidianos.`;
-            document.getElementById('palabrasSopa').value = tema.toUpperCase().split(' ').join(', ') + ', APRENDIZAJE, CLASE, ESTUDIO';
-            alert("✨ ¡Objetivos y palabras clave generados inteligentemente a partir del tema!");
-      function generarPresentacion() {
-    const numSemana = document.getElementById('semana').value.trim();
-    const tema = document.getElementById('tema').value;
-    const numSlides = parseInt(document.getElementById('numDiapositivas').value);
-    const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
-    const palabrasArr = document.getElementById('palabrasSopa').value.split(',').map(p => p.trim());
-
-    let diapositivas = [];
-    for (let i = 1; i <= numSlides; i++) {
-        diapositivas.push({
-            "titulo": i === 1 ? `Portada: ${tema}` : `Punto clave ${i}: ${tema} (Parte ${i})`,
-            "contenido": i === 1 
-                ? `Bienvenidos a la lección de la semana ${numSemana}. En esta unidad abordaremos los aspectos fundamentales sobre ${tema}.`
-                : `Continuando con el estudio de ${tema}, analizamos el bloque conceptual número ${i} enfocado en el desarrollo curricular de la asignatura.`,
-            "busquedaImagen": `${tema} concept ${i}`
-        });
-    }
-
-    // Crear el objeto de configuración completo
-    const configuracionPersonalizada = {
-        "curso": {
-            "institucion": document.getElementById('institucion').value,
-            "asignatura": document.getElementById('asignatura').value,
-            "grado": document.getElementById('grado').value,
-            "semana": parseInt(numSemana),
-            "tema": tema
-        },
-        "objetivos": objetivosArr,
-        "diapositivas": diapositivas,
-        "actividades": {
-            "sopaLetras": { "palabras": palabrasArr },
-            "test": {
-                "preguntas": [
-                    {
-                        "pregunta": `¿Cuál es el enfoque principal del tema tratado (${tema})?`,
-                        "opciones": [tema, "Conceptos aleatorios sin relación", "Historia general desvinculada", "Ninguna de las anteriores"],
-                        "correcta": 0,
-                        "retroalimentacion": "¡Exacto! El núcleo de la unidad gira en torno a este concepto."
-                    }
-                ]
+            if (!temaInput || !asignaturaInput || !objetivosArea || !palabrasInput) {
+                alert("Error: No se encontraron los campos del formulario.");
+                return;
             }
+
+            const tema = temaInput.value.trim() || "el tema seleccionado";
+            const asignatura = asignaturaInput.value.trim() || "la asignatura";
+
+            objetivosArea.value = `Comprender los fundamentos teóricos y prácticos de ${tema} en el área de ${asignatura}.\nAplicar los conceptos clave en actividades de análisis y autoevaluación.`;
+            
+            // Generar palabras limpias basadas en el tema
+            let palabrasLimpias = tema.toUpperCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Quitar tildes
+                .replace(/[^A-Z0-9\s]/g, "") // Quitar caracteres especiales
+                .split(/\s+/)
+                .filter(p => p.length > 2); // Solo palabras mayores a 2 letras
+
+            if (palabrasLimpias.length === 0) {
+                palabrasLimpias = ["ESTUDIO", "CLASE", "APRENDIZAJE"];
+            } else {
+                palabrasLimpias.push("ESTUDIO", "CLASE");
+            }
+
+            palabrasInput.value = palabrasLimpias.join(', ');
+            alert("✨ ¡Objetivos y palabras clave generados con éxito!");
         }
-    };
 
-    // Guardar en localStorage para que la vista del estudiante lo lea
-    localStorage.setItem('ucrish_presentacion_activa', JSON.stringify(configuracionPersonalizada));
+        function generarPresentacion() {
+            const institucion = document.getElementById('institucion').value.trim();
+            const asignatura = document.getElementById('asignatura').value.trim();
+            const grado = document.getElementById('grado').value.trim();
+            const numSemana = document.getElementById('semana').value.trim();
+            const tema = document.getElementById('tema').value.trim();
+            const numSlides = parseInt(document.getElementById('numDiapositivas').value) || 5;
+            
+            const objetivosArr = document.getElementById('objetivos').value.split('\n').filter(o => o.trim() !== '');
+            const palabrasArr = document.getElementById('palabrasSopa').value.split(',').map(p => p.trim()).filter(p => p !== '');
 
-    // Habilitar los botones de Ver presentación y Copiar HTML
-    const btnVer = document.getElementById('btn-ver-presentacion');
-    const btnCopiar = document.getElementById('btn-copiar-html');
+            if (!tema) {
+                alert("Por favor, introduce un tema principal.");
+                return;
+            }
 
-    btnVer.removeAttribute('disabled');
-    btnVer.style.pointerEvents = 'auto';
-    btnVer.style.opacity = '1';
+            let diapositivas = [];
+            for (let i = 1; i <= numSlides; i++) {
+                diapositivas.push({
+                    "titulo": i === 1 ? `Portada: Semana ${numSemana} - ${tema}` : `Punto clave ${i}: ${tema} (Bloque ${i})`,
+                    "contenido": i === 1 
+                        ? `Bienvenidos a la unidad didáctica de la semana ${numSemana}. Hoy profundizaremos en ${tema} dentro de la asignatura de ${asignatura}.`
+                        : `Continuando con el estudio de ${tema}, en este segmento analizamos los aspectos clave y su aplicación práctica en el nivel de ${grado}.`,
+                    "busquedaImagen": `${tema} education ${i}`
+                });
+            }
 
-    btnCopiar.removeAttribute('disabled');
+            const configuracionPersonalizada = {
+                "curso": {
+                    "institucion": institucion || "UCRISH",
+                    "asignatura": asignatura,
+                    "grado": grado,
+                    "semana": parseInt(numSemana) || 1,
+                    "tema": tema
+                },
+                "objetivos": objetivosArr,
+                "diapositivas": diapositivas,
+                "actividades": {
+                    "sopaLetras": { "palabras": palabrasArr.length > 0 ? palabrasArr : [tema.toUpperCase(), "UCRISH"] },
+                    "test": {
+                        "preguntas": [
+                            {
+                                "pregunta": `¿Cuál es el concepto central estudiado en la unidad de ${tema}?`,
+                                "opciones": [tema, "Concepto alternativo genérico", "Tema sin relación directa", "Ninguna de las anteriores"],
+                                "correcta": 0,
+                                "retroalimentacion": `¡Correcto! El eje central de la semana es ${tema}.`
+                            }
+                        ]
+                    }
+                }
+            };
 
-    alert("⚙️ ¡Presentación generada con éxito! Los datos se han sincronizado para la vista del estudiante.");
-}
+            // Guardar en localStorage para que la vista del estudiante lo lea al instante
+            localStorage.setItem('ucrish_presentacion_activa', JSON.stringify(configuracionPersonalizada));
+
+            // Habilitar los botones de Ver presentación y Copiar HTML
+            const btnVer = document.getElementById('btn-ver-presentacion');
+            const btnCopiar = document.getElementById('btn-copiar-html');
+
+            if (btnVer) {
+                btnVer.removeAttribute('disabled');
+                btnVer.style.pointerEvents = 'auto';
+                btnVer.style.opacity = '1';
+            }
+
+            if (btnCopiar) {
+                btnCopiar.removeAttribute('disabled');
+            }
+
+            alert("⚙️ ¡Presentación generada y sincronizada con éxito! Ya puedes ver la presentación o copiar el código HTML.");
+        }
 
         function copiarCodigoHtml() {
             const tema = document.getElementById('tema').value;
@@ -234,6 +278,7 @@ Diferenciar sus características estructurales.</textarea>
                 alert("📋 ¡Código HTML copiado al portapapeles con éxito!");
             }).catch(err => {
                 console.error("Error al copiar: ", err);
+                alert("No se pudo copiar automáticamente, pero los datos están listos.");
             });
         }
     </script>
